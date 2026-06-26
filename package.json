@@ -1,0 +1,19 @@
+{
+  "name": "canvascloud",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "db:generate": "pnpm --filter @canvascloud/api exec prisma generate",
+    "db:push": "pnpm --filter @canvascloud/api exec prisma db push",
+    "db:migrate": "pnpm --filter @canvascloud/api exec prisma migrate dev",
+    "db:studio": "pnpm --filter @canvascloud/api exec prisma studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.0.0"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
