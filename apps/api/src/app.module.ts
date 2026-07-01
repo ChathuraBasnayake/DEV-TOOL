@@ -7,6 +7,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { ValidationModule } from './validation/validation.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { CompilerModule } from './compiler/compiler.module';
+import { GuardrailsModule } from './guardrails/guardrails.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CompilerModule } from './compiler/compiler.module';
     ValidationModule,
     MetadataModule,
     CompilerModule,
+    GuardrailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
