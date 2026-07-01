@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ValidationModule } from './validation/validation.module';
 import { MetadataModule } from './metadata/metadata.module';
+import { CompilerModule } from './compiler/compiler.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MetadataModule } from './metadata/metadata.module';
     ProjectsModule,
     ValidationModule,
     MetadataModule,
+    CompilerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
