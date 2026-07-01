@@ -24,6 +24,9 @@ import { CloudFrontGenerator } from './cloudfront.generator';
 
 export * from './base.generator';
 export * from './synthetic.generator';
+export * from './provider.generator';
+export * from './variables.generator';
+export * from './outputs.generator';
 
 export const GENERATORS: Record<string, BaseGenerator> = {
   'ec2': new EC2Generator(),
