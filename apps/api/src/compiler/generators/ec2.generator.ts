@@ -35,6 +35,13 @@ export class EC2Generator extends BaseGenerator {
     if (sgIdsVal) {
       parts.push(`  vpc_security_group_ids = ${sgIdsVal}`);
     }
+
+    // Resolve synthetic IAM instance profile
+    const iamRef = references.find(r => r.targetNodeId === node.id && r.isSynthetic && r.terraformExpression === 'aws_iam_instance_profile');
+    if (iamRef) {
+      parts.push(`  iam_instance_profile = aws_iam_instance_profile.${name}_profile.name`);
+    }
+
     if (config.associate_public_ip_address !== undefined) {
       parts.push(`  associate_public_ip_address = ${config.associate_public_ip_address}`);
     }
