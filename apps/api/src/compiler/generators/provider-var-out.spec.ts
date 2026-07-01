@@ -92,7 +92,7 @@ describe('Provider, Variables and Outputs Generators', () => {
       ];
 
       const hcl = OUTPUTS_GENERATOR.generateOutputs(nodes);
-      
+
       expect(hcl).toContain('output "ec2_web_server_public_ip"');
       expect(hcl).toContain('value       = aws_instance.web_server.public_ip');
 

@@ -9,14 +9,18 @@ export abstract class BaseGenerator {
   protected findReference(
     nodeId: string,
     field: string,
-    references: TerraformReference[]
+    references: TerraformReference[],
   ): TerraformReference | undefined {
     // Check incoming references (e.g. subnet -> ec2, field = subnet_id, target = ec2)
-    const incoming = references.find(r => r.targetNodeId === nodeId && r.terraformField === field);
+    const incoming = references.find(
+      (r) => r.targetNodeId === nodeId && r.terraformField === field,
+    );
     if (incoming) return incoming;
 
     // Check outgoing references (e.g. asg -> subnet, field = vpc_zone_identifier, source = asg)
-    const outgoing = references.find(r => r.sourceNodeId === nodeId && r.terraformField === field);
+    const outgoing = references.find(
+      (r) => r.sourceNodeId === nodeId && r.terraformField === field,
+    );
     return outgoing;
   }
 
@@ -24,15 +28,22 @@ export abstract class BaseGenerator {
   protected findReferences(
     nodeId: string,
     field: string,
-    references: TerraformReference[]
+    references: TerraformReference[],
   ): TerraformReference[] {
-    const incoming = references.filter(r => r.targetNodeId === nodeId && r.terraformField === field);
-    const outgoing = references.filter(r => r.sourceNodeId === nodeId && r.terraformField === field);
+    const incoming = references.filter(
+      (r) => r.targetNodeId === nodeId && r.terraformField === field,
+    );
+    const outgoing = references.filter(
+      (r) => r.sourceNodeId === nodeId && r.terraformField === field,
+    );
     return [...incoming, ...outgoing];
   }
 
   // Format HCL tags block
-  protected formatTags(tags?: Record<string, string>, defaultName?: string): string {
+  protected formatTags(
+    tags?: Record<string, string>,
+    defaultName?: string,
+  ): string {
     const allTags = { ...tags };
     if (defaultName && !allTags.Name) {
       allTags.Name = defaultName;
@@ -47,6 +58,9 @@ export abstract class BaseGenerator {
   // Helper to indent multi-line strings
   protected indent(str: string, spaces: number): string {
     const indentStr = ' '.repeat(spaces);
-    return str.split('\n').map(line => line ? indentStr + line : '').join('\n');
+    return str
+      .split('\n')
+      .map((line) => (line ? indentStr + line : ''))
+      .join('\n');
   }
 }

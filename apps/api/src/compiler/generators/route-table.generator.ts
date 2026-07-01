@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, RouteTableConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  RouteTableConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class RouteTableGenerator extends BaseGenerator {
@@ -11,7 +15,11 @@ export class RouteTableGenerator extends BaseGenerator {
 
     // Resolve vpc_id from references
     const vpcRef = this.findReference(node.id, 'vpc_id', references);
-    const vpcIdVal = vpcRef ? vpcRef.terraformExpression : (config.vpc_id ? `"${config.vpc_id}"` : null);
+    const vpcIdVal = vpcRef
+      ? vpcRef.terraformExpression
+      : config.vpc_id
+        ? `"${config.vpc_id}"`
+        : null;
 
     const parts: string[] = [];
     parts.push(`resource "aws_route_table" "${name}" {`);
@@ -21,7 +29,7 @@ export class RouteTableGenerator extends BaseGenerator {
     }
 
     const routes = config.routes || [];
-    routes.forEach(route => {
+    routes.forEach((route) => {
       parts.push(`  route {`);
       parts.push(`    cidr_block = "${route.cidr_block}"`);
       if (route.gateway_id) {

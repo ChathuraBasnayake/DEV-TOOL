@@ -1,4 +1,9 @@
-import type { CanvasNode, CanvasEdge, SecurityWarning, Severity } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  CanvasEdge,
+  SecurityWarning,
+  Severity,
+} from '@canvascloud/shared';
 
 export abstract class BaseGuardrailRule {
   abstract readonly id: string;
@@ -6,5 +11,8 @@ export abstract class BaseGuardrailRule {
   abstract readonly severity: Severity;
   abstract readonly description: string;
 
-  abstract evaluate(nodes: CanvasNode[], edges: CanvasEdge[]): SecurityWarning[];
+  abstract evaluate(
+    nodes: CanvasNode[],
+    edges: CanvasEdge[],
+  ): SecurityWarning[];
 }

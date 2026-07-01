@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import type { IncomingMessage } from 'http';
 import JSZip from 'jszip';
 import { CompilerModule } from './compiler.module';
 import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
@@ -44,47 +45,62 @@ describe('CompilerController (e2e)', () => {
   };
 
   it('POST /compile - should compile and return HCL file structures in JSON', async () => {
-    const res = await request(app.getHttpServer())
+    const res = await request(
+      app.getHttpServer() as Parameters<typeof request>[0],
+    )
       .post('/compile')
       .send(payload)
       .expect(201);
 
-    expect(res.body.success).toBe(true);
-    const data = res.body.data;
+    const body = res.body as {
+      success: boolean;
+      data: { files: { filename: string; content: string }[] };
+    };
+    expect(body.success).toBe(true);
+    const data = body.data;
     expect(data.files).toBeDefined();
     expect(data.files).toHaveLength(5);
 
-    const mainFile = data.files.find((f: any) => f.filename === 'main.tf');
+    const mainFile = data.files.find((f) => f.filename === 'main.tf');
     expect(mainFile).toBeDefined();
-    expect(mainFile.content).toContain('resource "aws_vpc" "my_vpc"');
+    expect(mainFile?.content).toContain('resource "aws_vpc" "my_vpc"');
   });
 
   it('POST /compile/download - should compile and download files as a ZIP archive', async () => {
-    const res = await request(app.getHttpServer())
+    const res = await request(
+      app.getHttpServer() as Parameters<typeof request>[0],
+    )
       .post('/compile/download')
       .send(payload)
-      .parse((res: any, callback) => {
-        let data = Buffer.from([]);
-        res.on('data', (chunk: any) => {
-          data = Buffer.concat([data, chunk]);
-        });
-        res.on('end', () => {
-          callback(null, data);
-        });
-      })
+      .parse(
+        (
+          response: IncomingMessage,
+          callback: (err: Error | null, body: Buffer) => void,
+        ) => {
+          let data = Buffer.from([]);
+          response.on('data', (chunk: Buffer) => {
+            data = Buffer.concat([data, chunk]);
+          });
+          response.on('end', () => {
+            callback(null, data);
+          });
+        },
+      )
       .expect(201);
 
     // Verify headers
     expect(res.headers['content-type']).toBe('application/zip');
-    expect(res.headers['content-disposition']).toContain('attachment; filename="terraform.zip"');
+    expect(res.headers['content-disposition']).toContain(
+      'attachment; filename="terraform.zip"',
+    );
 
     // Parse ZIP buffer using JSZip to verify content integrity
-    const buffer = res.body;
+    const buffer = res.body as Buffer;
     expect(Buffer.isBuffer(buffer)).toBe(true);
 
     const zip = await JSZip.loadAsync(buffer);
     const files = Object.keys(zip.files);
-    
+
     expect(files).toContain('main.tf');
     expect(files).toContain('variables.tf');
     expect(files).toContain('outputs.tf');

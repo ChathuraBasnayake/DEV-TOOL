@@ -45,21 +45,35 @@ describe('GuardrailsController (e2e)', () => {
       edges: [] as CanvasEdge[],
     };
 
-    const res = await request(app.getHttpServer())
+    interface Warn {
+      ruleId: string;
+      severity: string;
+    }
+    interface ScanResponseData {
+      warnings: Warn[];
+      summary: { critical: number; warning: number; info: number };
+    }
+
+    const res = await request(
+      app.getHttpServer() as Parameters<typeof request>[0],
+    )
       .post('/scan')
       .send(payload)
       .expect(201);
 
-    expect(res.body.success).toBe(true);
-    const data = res.body.data;
-    
+    const body = res.body as { success: boolean; data: ScanResponseData };
+    expect(body.success).toBe(true);
+    const data = body.data;
+
     expect(data.warnings).toBeDefined();
     expect(data.summary).toBeDefined();
-    
+
     // Critical publicly accessible database warning should trigger
     expect(data.summary.critical).toBeGreaterThanOrEqual(1);
 
-    const publicRDSWarning = data.warnings.find((w: any) => w.ruleId === 'public-rds-instance');
+    const publicRDSWarning = data.warnings.find(
+      (w) => w.ruleId === 'public-rds-instance',
+    );
     expect(publicRDSWarning).toBeDefined();
     expect(publicRDSWarning.severity).toBe('critical');
   });

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Project, ProjectMeta } from '@canvascloud/shared';
+import { Project, ProjectMeta, CanvasState } from '@canvascloud/shared';
 
 @Injectable()
 export class ProjectsService {
@@ -13,10 +13,10 @@ export class ProjectsService {
       orderBy: { updatedAt: 'desc' },
     });
     return projects.map((p) => {
-      let canvas: any = { nodes: [], edges: [] };
+      let canvas: CanvasState = { nodes: [], edges: [], viewport: { x: 0, y: 0, zoom: 1 } };
       try {
-        canvas = JSON.parse(p.canvas);
-      } catch (e) {
+        canvas = JSON.parse(p.canvas) as CanvasState;
+      } catch {
         // Fallback for malformed records
       }
       return {
@@ -35,10 +35,14 @@ export class ProjectsService {
       const project = await this.prisma.project.findUniqueOrThrow({
         where: { id },
       });
-      let parsedCanvas: any = { nodes: [], edges: [], viewport: { x: 0, y: 0, zoom: 1 } };
+      let parsedCanvas: CanvasState = {
+        nodes: [],
+        edges: [],
+        viewport: { x: 0, y: 0, zoom: 1 },
+      };
       try {
-        parsedCanvas = JSON.parse(project.canvas);
-      } catch (e) {
+        parsedCanvas = JSON.parse(project.canvas) as CanvasState;
+      } catch {
         // Fallback
       }
       return {
@@ -50,7 +54,7 @@ export class ProjectsService {
         nodeCount: parsedCanvas.nodes?.length || 0,
         edgeCount: parsedCanvas.edges?.length || 0,
       };
-    } catch (error) {
+    } catch {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
   }
@@ -75,7 +79,7 @@ export class ProjectsService {
         },
       });
       return this.findOne(id);
-    } catch (error) {
+    } catch {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
   }
@@ -84,7 +88,7 @@ export class ProjectsService {
     try {
       await this.prisma.project.delete({ where: { id } });
       return { success: true };
-    } catch (error) {
+    } catch {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
   }

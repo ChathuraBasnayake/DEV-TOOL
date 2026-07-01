@@ -37,10 +37,11 @@ export class CompilerService {
             nodeHclBlocks.push(hcl);
           }
         } catch (error) {
+          const errMsg = error instanceof Error ? error.message : String(error);
           warnings.push({
             nodeId: node.id,
             field: 'config',
-            message: `HCL generation failed: ${error.message}`,
+            message: `HCL generation failed: ${errMsg}`,
           });
         }
       } else {
@@ -54,16 +55,20 @@ export class CompilerService {
 
     // 4. Compile HCL for synthetic intermediate glue resources
     const syntheticResources = SYNTHETIC_GENERATOR.generate(nodes, edges);
-    const syntheticHclBlocks = syntheticResources.map(r => r.hcl);
+    const syntheticHclBlocks = syntheticResources.map((r) => r.hcl);
 
     // 5. Combine and format main.tf
     const rawMainHcl = [...nodeHclBlocks, ...syntheticHclBlocks].join('\n\n');
     const mainHcl = formatHCL(rawMainHcl);
 
     // 6. Generate and format ancillary Terraform files
-    const terraformHcl = formatHCL(PROVIDER_GENERATOR.generateRequiredProviders());
+    const terraformHcl = formatHCL(
+      PROVIDER_GENERATOR.generateRequiredProviders(),
+    );
     const providerHcl = formatHCL(PROVIDER_GENERATOR.generateProvider());
-    const variablesHcl = formatHCL(VARIABLES_GENERATOR.generateVariables(nodes));
+    const variablesHcl = formatHCL(
+      VARIABLES_GENERATOR.generateVariables(nodes),
+    );
     const outputsHcl = formatHCL(OUTPUTS_GENERATOR.generateOutputs(nodes));
 
     // 7. Assemble final file bundle list

@@ -1,11 +1,16 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, EIPConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  EIPConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class EIPGenerator extends BaseGenerator {
   readonly resourceType = 'eip';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as EIPConfig;
     const name = toTerraformName(node.data.label || node.id);
 

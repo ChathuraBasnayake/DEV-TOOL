@@ -151,7 +151,9 @@ describe('AWS Resource Generators', () => {
       expect(hcl).toContain('ami           = "ami-12345678"');
       expect(hcl).toContain('instance_type = "t3.micro"');
       expect(hcl).toContain('subnet_id     = aws_subnet.public_subnet_a.id');
-      expect(hcl).toContain('vpc_security_group_ids = [aws_security_group.web_sg.id]');
+      expect(hcl).toContain(
+        'vpc_security_group_ids = [aws_security_group.web_sg.id]',
+      );
       expect(hcl).toContain('root_block_device {');
       expect(hcl).toContain('volume_size = 30');
       expect(hcl).toContain('volume_type = "gp3"');
@@ -181,7 +183,9 @@ describe('AWS Resource Generators', () => {
       expect(hcl).toContain('resource "aws_s3_bucket" "static_assets" {');
       expect(hcl).toContain('bucket        = "my-unique-static-assets-bucket"');
       expect(hcl).toContain('force_destroy = true');
-      expect(hcl).toContain('resource "aws_s3_bucket_versioning" "static_assets_versioning" {');
+      expect(hcl).toContain(
+        'resource "aws_s3_bucket_versioning" "static_assets_versioning" {',
+      );
       expect(hcl).toContain('status = "Enabled"');
     });
   });
@@ -253,14 +257,19 @@ describe('AWS Resource Generators', () => {
           sourceNodeId: 'cf-1',
           targetNodeId: 's3-1',
           terraformField: 'origin.domain_name',
-          terraformExpression: 'aws_s3_bucket.static_assets.bucket_regional_domain_name',
+          terraformExpression:
+            'aws_s3_bucket.static_assets.bucket_regional_domain_name',
           isSynthetic: false,
         },
       ];
 
       const hcl = GENERATORS.cloudfront.generate(node, refs);
-      expect(hcl).toContain('resource "aws_cloudfront_distribution" "my_cdn" {');
-      expect(hcl).toContain('domain_name = aws_s3_bucket.static_assets.bucket_regional_domain_name');
+      expect(hcl).toContain(
+        'resource "aws_cloudfront_distribution" "my_cdn" {',
+      );
+      expect(hcl).toContain(
+        'domain_name = aws_s3_bucket.static_assets.bucket_regional_domain_name',
+      );
       expect(hcl).toContain('target_origin_id = "S3-Origin"');
       expect(hcl).toContain('viewer_protocol_policy = "redirect-to-https"');
     });

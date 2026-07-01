@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, LambdaConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  LambdaConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class LambdaGenerator extends BaseGenerator {
@@ -11,23 +15,39 @@ export class LambdaGenerator extends BaseGenerator {
 
     // Resolve IAM Role from references
     const roleRef = this.findReference(node.id, 'role', references);
-    const roleArnVal = roleRef ? roleRef.terraformExpression : (config.role ? `"${config.role}"` : '""');
+    const roleArnVal = roleRef
+      ? roleRef.terraformExpression
+      : config.role
+        ? `"${config.role}"`
+        : '""';
 
     // Resolve VPC subnets from references
-    const subnetRefs = this.findReferences(node.id, 'vpc_config.subnet_ids', references);
-    const subnetsVal = subnetRefs.length > 0
-      ? `[${subnetRefs.map(r => r.terraformExpression).join(', ')}]`
-      : (config.vpc_config?.subnet_ids && config.vpc_config.subnet_ids.length > 0
-        ? `[${config.vpc_config.subnet_ids.map(id => `"${id}"`).join(', ')}]`
-        : null);
+    const subnetRefs = this.findReferences(
+      node.id,
+      'vpc_config.subnet_ids',
+      references,
+    );
+    const subnetsVal =
+      subnetRefs.length > 0
+        ? `[${subnetRefs.map((r) => r.terraformExpression).join(', ')}]`
+        : config.vpc_config?.subnet_ids &&
+            config.vpc_config.subnet_ids.length > 0
+          ? `[${config.vpc_config.subnet_ids.map((id) => `"${id}"`).join(', ')}]`
+          : null;
 
     // Resolve VPC security groups from references
-    const sgRefs = this.findReferences(node.id, 'vpc_config.security_group_ids', references);
-    const sgsVal = sgRefs.length > 0
-      ? `[${sgRefs.map(r => r.terraformExpression).join(', ')}]`
-      : (config.vpc_config?.security_group_ids && config.vpc_config.security_group_ids.length > 0
-        ? `[${config.vpc_config.security_group_ids.map(id => `"${id}"`).join(', ')}]`
-        : null);
+    const sgRefs = this.findReferences(
+      node.id,
+      'vpc_config.security_group_ids',
+      references,
+    );
+    const sgsVal =
+      sgRefs.length > 0
+        ? `[${sgRefs.map((r) => r.terraformExpression).join(', ')}]`
+        : config.vpc_config?.security_group_ids &&
+            config.vpc_config.security_group_ids.length > 0
+          ? `[${config.vpc_config.security_group_ids.map((id) => `"${id}"`).join(', ')}]`
+          : null;
 
     const parts: string[] = [];
     parts.push(`resource "aws_lambda_function" "${name}" {`);
@@ -53,7 +73,10 @@ export class LambdaGenerator extends BaseGenerator {
       parts.push(`  timeout       = ${config.timeout}`);
     }
 
-    if (config.environment_variables && Object.keys(config.environment_variables).length > 0) {
+    if (
+      config.environment_variables &&
+      Object.keys(config.environment_variables).length > 0
+    ) {
       parts.push(`  environment {`);
       parts.push(`    variables = {`);
       Object.entries(config.environment_variables).forEach(([k, v]) => {
@@ -75,7 +98,9 @@ export class LambdaGenerator extends BaseGenerator {
     }
 
     if (config.layers && config.layers.length > 0) {
-      parts.push(`  layers        = [${config.layers.map(l => `"${l}"`).join(', ')}]`);
+      parts.push(
+        `  layers        = [${config.layers.map((l) => `"${l}"`).join(', ')}]`,
+      );
     }
 
     const tagsHcl = this.formatTags(config.tags, node.data.label || node.id);

@@ -1,9 +1,13 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, CanvasEdge, SyntheticResource } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  CanvasEdge,
+  SyntheticResource,
+} from '@canvascloud/shared';
 
 export class SyntheticGenerator {
   generate(nodes: CanvasNode[], edges: CanvasEdge[]): SyntheticResource[] {
-    const nodeMap = new Map<string, CanvasNode>(nodes.map(n => [n.id, n]));
+    const nodeMap = new Map<string, CanvasNode>(nodes.map((n) => [n.id, n]));
     const syntheticResources: SyntheticResource[] = [];
 
     for (const edge of edges) {
@@ -11,8 +15,12 @@ export class SyntheticGenerator {
       const targetNode = nodeMap.get(edge.target);
       if (!sourceNode || !targetNode) continue;
 
-      const sourceName = toTerraformName(sourceNode.data.label || sourceNode.id);
-      const targetName = toTerraformName(targetNode.data.label || targetNode.id);
+      const sourceName = toTerraformName(
+        sourceNode.data.label || sourceNode.id,
+      );
+      const targetName = toTerraformName(
+        targetNode.data.label || targetNode.id,
+      );
       const key = `${sourceNode.data.resourceType}->${targetNode.data.resourceType}`;
       const generatedFrom = `edge: ${edge.id} (${key})`;
 
@@ -26,8 +34,8 @@ export class SyntheticGenerator {
               `resource "aws_route_table_association" "rt_assoc_${sourceName}_${targetName}" {`,
               `  subnet_id      = aws_subnet.${targetName}.id`,
               `  route_table_id = aws_route_table.${sourceName}.id`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -41,8 +49,8 @@ export class SyntheticGenerator {
               `resource "aws_iam_role_policy_attachment" "policy_attach_${sourceName}_${targetName}" {`,
               `  role       = aws_iam_role.${targetName}.name`,
               `  policy_arn = aws_iam_policy.${sourceName}.arn`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -62,8 +70,8 @@ export class SyntheticGenerator {
               `    type             = "forward"`,
               `    target_group_arn = aws_lb_target_group.${targetName}.arn`,
               `  }`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -77,8 +85,8 @@ export class SyntheticGenerator {
               `resource "aws_lb_target_group_attachment" "tg_attach_${sourceName}_${targetName}" {`,
               `  target_group_arn = aws_lb_target_group.${sourceName}.arn`,
               `  target_id        = aws_instance.${targetName}.id`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -93,8 +101,8 @@ export class SyntheticGenerator {
                 `resource "aws_lb_target_group_attachment" "tg_attach_${sourceName}_${targetName}" {`,
                 `  target_group_arn = aws_lb_target_group.${sourceName}.arn`,
                 `  target_id        = aws_lambda_function.${targetName}.arn`,
-                `}`
-              ].join('\n')
+                `}`,
+              ].join('\n'),
             },
             {
               type: 'aws_lambda_permission',
@@ -107,9 +115,9 @@ export class SyntheticGenerator {
                 `  function_name = aws_lambda_function.${targetName}.function_name`,
                 `  principal     = "elasticloadbalancing.amazonaws.com"`,
                 `  source_arn    = aws_lb_target_group.${sourceName}.arn`,
-                `}`
-              ].join('\n')
-            }
+                `}`,
+              ].join('\n'),
+            },
           );
           break;
         }
@@ -125,8 +133,8 @@ export class SyntheticGenerator {
                 `  api_id           = aws_apigatewayv2_api.${sourceName}.id`,
                 `  integration_type = "AWS_PROXY"`,
                 `  integration_uri  = aws_lambda_function.${targetName}.arn`,
-                `}`
-              ].join('\n')
+                `}`,
+              ].join('\n'),
             },
             {
               type: 'aws_apigatewayv2_route',
@@ -137,8 +145,8 @@ export class SyntheticGenerator {
                 `  api_id    = aws_apigatewayv2_api.${sourceName}.id`,
                 `  route_key = "ANY /{proxy+}"`,
                 `  target    = "integrations/\${aws_apigatewayv2_integration.api_integration_${sourceName}_${targetName}.id}"`,
-                `}`
-              ].join('\n')
+                `}`,
+              ].join('\n'),
             },
             {
               type: 'aws_lambda_permission',
@@ -151,9 +159,9 @@ export class SyntheticGenerator {
                 `  function_name = aws_lambda_function.${targetName}.function_name`,
                 `  principal     = "apigateway.amazonaws.com"`,
                 `  source_arn    = "\${aws_apigatewayv2_api.${sourceName}.execution_arn}/*/*"`,
-                `}`
-              ].join('\n')
-            }
+                `}`,
+              ].join('\n'),
+            },
           );
           break;
         }
@@ -167,8 +175,8 @@ export class SyntheticGenerator {
               `resource "aws_iam_instance_profile" "${targetName}_profile" {`,
               `  name = "${targetName}-profile"`,
               `  role = aws_iam_role.${sourceName}.name`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -183,8 +191,8 @@ export class SyntheticGenerator {
               `  route_table_id         = aws_route_table.${targetName}.id`,
               `  destination_cidr_block = "0.0.0.0/0"`,
               `  gateway_id             = aws_internet_gateway.${sourceName}.id`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -199,8 +207,8 @@ export class SyntheticGenerator {
               `  route_table_id         = aws_route_table.${targetName}.id`,
               `  destination_cidr_block = "0.0.0.0/0"`,
               `  nat_gateway_id         = aws_nat_gateway.${sourceName}.id`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -221,8 +229,8 @@ export class SyntheticGenerator {
               `    zone_id                = aws_lb.${targetName}.zone_id`,
               `    evaluate_target_health = true`,
               `  }`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }
@@ -243,8 +251,8 @@ export class SyntheticGenerator {
               `    zone_id                = aws_cloudfront_distribution.${targetName}.hosted_zone_id`,
               `    evaluate_target_health = false`,
               `  }`,
-              `}`
-            ].join('\n')
+              `}`,
+            ].join('\n'),
           });
           break;
         }

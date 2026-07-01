@@ -4,7 +4,7 @@ import { PublicRDSRule } from './public-rds.rule';
 import { IAMWildcardRule } from './iam-wildcard.rule';
 import { PublicS3Rule } from './public-s3.rule';
 import { NoSGAttachedRule } from './no-sg-attached.rule';
-import type { CanvasNode, CanvasEdge } from '@canvascloud/shared';
+import type { CanvasNode } from '@canvascloud/shared';
 
 describe('Security Guardrails Rules', () => {
   it('should list all 14 rules in the registry', () => {
@@ -138,7 +138,9 @@ describe('Security Guardrails Rules', () => {
       const warnings = rule.evaluate(nodes, []);
       expect(warnings).toHaveLength(1);
       expect(warnings[0].severity).toBe('critical');
-      expect(warnings[0].message).toContain('broad wildcard (*) actions or resources');
+      expect(warnings[0].message).toContain(
+        'broad wildcard (*) actions or resources',
+      );
     });
   });
 

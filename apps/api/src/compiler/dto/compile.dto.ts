@@ -12,7 +12,8 @@ export class CompileDto {
   nodes: CanvasNode[];
 
   @ApiProperty({
-    description: 'Array of canvas edges representing connections between resources',
+    description:
+      'Array of canvas edges representing connections between resources',
     type: 'array',
     items: { type: 'object' },
   })

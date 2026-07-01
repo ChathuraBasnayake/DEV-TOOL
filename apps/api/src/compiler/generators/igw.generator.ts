@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, IGWConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  IGWConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class IGWGenerator extends BaseGenerator {
@@ -11,11 +15,15 @@ export class IGWGenerator extends BaseGenerator {
 
     // Resolve vpc_id from references
     const vpcRef = this.findReference(node.id, 'vpc_id', references);
-    const vpcIdVal = vpcRef ? vpcRef.terraformExpression : (config.vpc_id ? `"${config.vpc_id}"` : null);
+    const vpcIdVal = vpcRef
+      ? vpcRef.terraformExpression
+      : config.vpc_id
+        ? `"${config.vpc_id}"`
+        : null;
 
     const parts: string[] = [];
     parts.push(`resource "aws_internet_gateway" "${name}" {`);
-    
+
     if (vpcIdVal) {
       parts.push(`  vpc_id = ${vpcIdVal}`);
     }

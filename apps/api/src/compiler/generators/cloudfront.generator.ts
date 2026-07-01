@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, CloudFrontConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  CloudFrontConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class CloudFrontGenerator extends BaseGenerator {
@@ -10,12 +14,18 @@ export class CloudFrontGenerator extends BaseGenerator {
     const name = toTerraformName(node.data.label || node.id);
 
     // Resolve origin from references
-    const originRef = this.findReference(node.id, 'origin.domain_name', references);
-    
+    const originRef = this.findReference(
+      node.id,
+      'origin.domain_name',
+      references,
+    );
+
     // Determine origin type and name
     let originType = config.origin_type || 's3';
-    let domainName = config.origin_domain_name ? `"${config.origin_domain_name}"` : '"mybucket.s3.amazonaws.com"';
-    
+    let domainName = config.origin_domain_name
+      ? `"${config.origin_domain_name}"`
+      : '"mybucket.s3.amazonaws.com"';
+
     if (originRef) {
       domainName = originRef.terraformExpression;
       // If the reference expression contains "aws_s3_bucket", it's S3. Otherwise, custom/ALB.
@@ -49,9 +59,13 @@ export class CloudFrontGenerator extends BaseGenerator {
     }
     parts.push(`  }`);
 
-    parts.push(`  enabled             = ${config.enabled !== undefined ? config.enabled : true}`);
-    parts.push(`  is_ipv6_enabled     = ${config.is_ipv6_enabled !== undefined ? config.is_ipv6_enabled : true}`);
-    
+    parts.push(
+      `  enabled             = ${config.enabled !== undefined ? config.enabled : true}`,
+    );
+    parts.push(
+      `  is_ipv6_enabled     = ${config.is_ipv6_enabled !== undefined ? config.is_ipv6_enabled : true}`,
+    );
+
     if (config.default_root_object) {
       parts.push(`  default_root_object = "${config.default_root_object}"`);
     }
@@ -64,16 +78,20 @@ export class CloudFrontGenerator extends BaseGenerator {
 
     // Default Cache Behavior
     parts.push(`  default_cache_behavior {`);
-    const allowed = config.allowed_methods && config.allowed_methods.length > 0
-      ? `[${config.allowed_methods.map(m => `"${m}"`).join(', ')}]`
-      : '["GET", "HEAD"]';
-    const cached = config.cached_methods && config.cached_methods.length > 0
-      ? `[${config.cached_methods.map(m => `"${m}"`).join(', ')}]`
-      : '["GET", "HEAD"]';
+    const allowed =
+      config.allowed_methods && config.allowed_methods.length > 0
+        ? `[${config.allowed_methods.map((m) => `"${m}"`).join(', ')}]`
+        : '["GET", "HEAD"]';
+    const cached =
+      config.cached_methods && config.cached_methods.length > 0
+        ? `[${config.cached_methods.map((m) => `"${m}"`).join(', ')}]`
+        : '["GET", "HEAD"]';
     parts.push(`    allowed_methods  = ${allowed}`);
     parts.push(`    cached_methods   = ${cached}`);
     parts.push(`    target_origin_id = "${originId}"`);
-    parts.push(`    viewer_protocol_policy = "${config.viewer_protocol_policy || 'redirect-to-https'}"`);
+    parts.push(
+      `    viewer_protocol_policy = "${config.viewer_protocol_policy || 'redirect-to-https'}"`,
+    );
 
     parts.push(`    forwarded_values {`);
     parts.push(`      query_string = false`);
@@ -93,9 +111,13 @@ export class CloudFrontGenerator extends BaseGenerator {
     // Certificate
     if (config.acm_certificate_arn) {
       parts.push(`  viewer_certificate {`);
-      parts.push(`    acm_certificate_arn      = "${config.acm_certificate_arn}"`);
+      parts.push(
+        `    acm_certificate_arn      = "${config.acm_certificate_arn}"`,
+      );
       parts.push(`    ssl_support_method       = "sni-only"`);
-      parts.push(`    minimum_protocol_version = "${config.minimum_protocol_version || 'TLSv1.2_2021'}"`);
+      parts.push(
+        `    minimum_protocol_version = "${config.minimum_protocol_version || 'TLSv1.2_2021'}"`,
+      );
       parts.push(`  }`);
     } else {
       parts.push(`  viewer_certificate {`);
@@ -104,7 +126,7 @@ export class CloudFrontGenerator extends BaseGenerator {
     }
 
     if (config.aliases && config.aliases.length > 0) {
-      const aliasesVal = `[${config.aliases.map(a => `"${a}"`).join(', ')}]`;
+      const aliasesVal = `[${config.aliases.map((a) => `"${a}"`).join(', ')}]`;
       parts.push(`  aliases             = ${aliasesVal}`);
     }
 

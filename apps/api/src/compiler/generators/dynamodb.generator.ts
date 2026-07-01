@@ -1,18 +1,25 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, DynamoDBConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  DynamoDBConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class DynamoDBGenerator extends BaseGenerator {
   readonly resourceType = 'dynamodb';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as DynamoDBConfig;
     const name = toTerraformName(node.data.label || node.id);
 
     const parts: string[] = [];
     parts.push(`resource "aws_dynamodb_table" "${name}" {`);
     parts.push(`  name         = "${config.name || name}"`);
-    parts.push(`  billing_mode = "${config.billing_mode || 'PAY_PER_REQUEST'}"`);
+    parts.push(
+      `  billing_mode = "${config.billing_mode || 'PAY_PER_REQUEST'}"`,
+    );
     parts.push(`  hash_key     = "${config.hash_key || 'id'}"`);
 
     if (config.range_key) {
@@ -25,7 +32,7 @@ export class DynamoDBGenerator extends BaseGenerator {
     }
 
     const attrs = config.attributes || [{ name: 'id', type: 'S' }];
-    attrs.forEach(attr => {
+    attrs.forEach((attr) => {
       parts.push(`  attribute {`);
       parts.push(`    name = "${attr.name}"`);
       parts.push(`    type = "${attr.type}"`);

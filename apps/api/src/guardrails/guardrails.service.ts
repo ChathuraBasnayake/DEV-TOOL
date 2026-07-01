@@ -25,9 +25,9 @@ export class GuardrailsService {
 
     // Aggregate severity summaries
     const summary = {
-      critical: warnings.filter(w => w.severity === 'critical').length,
-      warning: warnings.filter(w => w.severity === 'warning').length,
-      info: warnings.filter(w => w.severity === 'info').length,
+      critical: warnings.filter((w) => w.severity === 'critical').length,
+      warning: warnings.filter((w) => w.severity === 'warning').length,
+      info: warnings.filter((w) => w.severity === 'info').length,
     };
 
     return {

@@ -1,6 +1,10 @@
 import { SyntheticGenerator } from './synthetic.generator';
 import { EC2Generator } from './ec2.generator';
-import type { CanvasNode, CanvasEdge, TerraformReference } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  CanvasEdge,
+  TerraformReference,
+} from '@canvascloud/shared';
 
 describe('Synthetic Resource Generator', () => {
   let generator: SyntheticGenerator;
@@ -51,8 +55,12 @@ describe('Synthetic Resource Generator', () => {
     expect(synthetic).toHaveLength(1);
     expect(synthetic[0].type).toBe('aws_route_table_association');
     expect(synthetic[0].name).toBe('rt_assoc_public_rt_subnet_a');
-    expect(synthetic[0].hcl).toContain('subnet_id      = aws_subnet.subnet_a.id');
-    expect(synthetic[0].hcl).toContain('route_table_id = aws_route_table.public_rt.id');
+    expect(synthetic[0].hcl).toContain(
+      'subnet_id      = aws_subnet.subnet_a.id',
+    );
+    expect(synthetic[0].hcl).toContain(
+      'route_table_id = aws_route_table.public_rt.id',
+    );
   });
 
   it('should generate aws_apigatewayv2_integration, route, and permission for api-gateway->lambda connection', () => {
@@ -92,17 +100,25 @@ describe('Synthetic Resource Generator', () => {
     const synthetic = generator.generate(nodes, edges);
     expect(synthetic).toHaveLength(3);
 
-    const integration = synthetic.find(r => r.type === 'aws_apigatewayv2_integration');
+    const integration = synthetic.find(
+      (r) => r.type === 'aws_apigatewayv2_integration',
+    );
     expect(integration).toBeDefined();
-    expect(integration?.hcl).toContain('integration_uri  = aws_lambda_function.my_lambda.arn');
+    expect(integration?.hcl).toContain(
+      'integration_uri  = aws_lambda_function.my_lambda.arn',
+    );
 
-    const route = synthetic.find(r => r.type === 'aws_apigatewayv2_route');
+    const route = synthetic.find((r) => r.type === 'aws_apigatewayv2_route');
     expect(route).toBeDefined();
     expect(route?.hcl).toContain('route_key = "ANY /{proxy+}"');
 
-    const permission = synthetic.find(r => r.type === 'aws_lambda_permission');
+    const permission = synthetic.find(
+      (r) => r.type === 'aws_lambda_permission',
+    );
     expect(permission).toBeDefined();
-    expect(permission?.hcl).toContain('principal     = "apigateway.amazonaws.com"');
+    expect(permission?.hcl).toContain(
+      'principal     = "apigateway.amazonaws.com"',
+    );
   });
 
   it('should generate aws_iam_instance_profile for iam-role->ec2 connection', () => {
@@ -157,6 +173,8 @@ describe('Synthetic Resource Generator', () => {
       },
     ];
     const ec2Hcl = ec2Gen.generate(nodes[1], refs);
-    expect(ec2Hcl).toContain('iam_instance_profile = aws_iam_instance_profile.web_server_profile.name');
+    expect(ec2Hcl).toContain(
+      'iam_instance_profile = aws_iam_instance_profile.web_server_profile.name',
+    );
   });
 });
