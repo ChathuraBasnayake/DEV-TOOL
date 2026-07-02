@@ -13,7 +13,11 @@ export class ProjectsService {
       orderBy: { updatedAt: 'desc' },
     });
     return projects.map((p) => {
-      let canvas: CanvasState = { nodes: [], edges: [], viewport: { x: 0, y: 0, zoom: 1 } };
+      let canvas: CanvasState = {
+        nodes: [],
+        edges: [],
+        viewport: { x: 0, y: 0, zoom: 1 },
+      };
       try {
         canvas = JSON.parse(p.canvas) as CanvasState;
       } catch {

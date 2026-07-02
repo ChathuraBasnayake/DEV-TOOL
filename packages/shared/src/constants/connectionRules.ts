@@ -1,4 +1,4 @@
-import type { AWSResourceType } from '../types/canvas';
+import type { AWSResourceType } from '../types/canvas.js';
 
 export const VALID_CONNECTIONS: Record<AWSResourceType, AWSResourceType[]> = {
   // Compute

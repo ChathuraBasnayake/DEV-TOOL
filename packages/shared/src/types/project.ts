@@ -1,4 +1,4 @@
-import type { CanvasState } from './canvas';
+import type { CanvasState } from './canvas.js';
 
 export interface ProjectMeta {
   id: string;
