@@ -3,8 +3,6 @@
 import React, { useRef, useCallback } from "react";
 import {
   ReactFlow,
-  Controls,
-  Background,
   MiniMap,
   useReactFlow,
   ReactFlowProvider,
@@ -16,10 +14,14 @@ import {
   getBezierPath,
   Node,
   Edge,
+  Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCanvasStore } from "../store/canvasStore";
 import type { AWSResourceType } from "@canvascloud/shared";
+import CanvasBackground from "./CanvasBackground";
+import ConnectionLine from "./ConnectionLine";
+import CanvasControls from "./CanvasControls";
 
 /**
  * Temporary Placeholder Node styled inline with theme rules 
@@ -217,10 +219,13 @@ function CanvasFlow() {
         onMoveEnd={onMoveEnd}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        connectionLineComponent={ConnectionLine}
         fitView
       >
-        <Controls />
-        <Background color="var(--border-color)" gap={16} size={1} />
+        <CanvasBackground />
+        <Panel position="bottom-left" style={{ margin: "16px" }}>
+          <CanvasControls />
+        </Panel>
         <MiniMap
           nodeStrokeColor={(n) => {
             if (n.selected) return "var(--primary-accent)";
