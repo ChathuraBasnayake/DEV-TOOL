@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, SecurityGroupConfig, SGRule } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  SecurityGroupConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class SecurityGroupGenerator extends BaseGenerator {
@@ -11,12 +15,18 @@ export class SecurityGroupGenerator extends BaseGenerator {
 
     // Resolve vpc_id from references
     const vpcRef = this.findReference(node.id, 'vpc_id', references);
-    const vpcIdVal = vpcRef ? vpcRef.terraformExpression : (config.vpc_id ? `"${config.vpc_id}"` : null);
+    const vpcIdVal = vpcRef
+      ? vpcRef.terraformExpression
+      : config.vpc_id
+        ? `"${config.vpc_id}"`
+        : null;
 
     const parts: string[] = [];
     parts.push(`resource "aws_security_group" "${name}" {`);
     parts.push(`  name        = "${config.name || name}"`);
-    parts.push(`  description = "${config.description || 'Managed by CanvasCloud'}"`);
+    parts.push(
+      `  description = "${config.description || 'Managed by CanvasCloud'}"`,
+    );
 
     if (vpcIdVal) {
       parts.push(`  vpc_id      = ${vpcIdVal}`);
@@ -24,14 +34,15 @@ export class SecurityGroupGenerator extends BaseGenerator {
 
     // Ingress rules
     const ingress = config.ingressRules || [];
-    ingress.forEach(rule => {
+    ingress.forEach((rule) => {
       parts.push(`  ingress {`);
       parts.push(`    from_port   = ${rule.from_port}`);
       parts.push(`    to_port     = ${rule.to_port}`);
       parts.push(`    protocol    = "${rule.protocol}"`);
-      const cidrBlocks = rule.cidr_blocks && rule.cidr_blocks.length > 0
-        ? `[${rule.cidr_blocks.map(c => `"${c}"`).join(', ')}]`
-        : '["0.0.0.0/0"]';
+      const cidrBlocks =
+        rule.cidr_blocks && rule.cidr_blocks.length > 0
+          ? `[${rule.cidr_blocks.map((c) => `"${c}"`).join(', ')}]`
+          : '["0.0.0.0/0"]';
       parts.push(`    cidr_blocks = ${cidrBlocks}`);
       if (rule.description) {
         parts.push(`    description = "${rule.description}"`);
@@ -50,14 +61,15 @@ export class SecurityGroupGenerator extends BaseGenerator {
       parts.push(`    cidr_blocks = ["0.0.0.0/0"]`);
       parts.push(`  }`);
     } else {
-      egress.forEach(rule => {
+      egress.forEach((rule) => {
         parts.push(`  egress {`);
         parts.push(`    from_port   = ${rule.from_port}`);
         parts.push(`    to_port     = ${rule.to_port}`);
         parts.push(`    protocol    = "${rule.protocol}"`);
-        const cidrBlocks = rule.cidr_blocks && rule.cidr_blocks.length > 0
-          ? `[${rule.cidr_blocks.map(c => `"${c}"`).join(', ')}]`
-          : '["0.0.0.0/0"]';
+        const cidrBlocks =
+          rule.cidr_blocks && rule.cidr_blocks.length > 0
+            ? `[${rule.cidr_blocks.map((c) => `"${c}"`).join(', ')}]`
+            : '["0.0.0.0/0"]';
         parts.push(`    cidr_blocks = ${cidrBlocks}`);
         if (rule.description) {
           parts.push(`    description = "${rule.description}"`);

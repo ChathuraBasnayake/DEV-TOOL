@@ -1,5 +1,10 @@
 import { BaseGuardrailRule } from './base.rule';
-import type { CanvasNode, CanvasEdge, SecurityWarning, IAMPolicyConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  CanvasEdge,
+  SecurityWarning,
+  IAMPolicyConfig,
+} from '@canvascloud/shared';
 
 export class IAMWildcardRule extends BaseGuardrailRule {
   readonly id = 'iam-wildcard-permissions';
@@ -7,9 +12,12 @@ export class IAMWildcardRule extends BaseGuardrailRule {
   readonly severity = 'critical' as const;
   readonly description = 'IAM policy document grants wildcard (*) permissions';
 
-  evaluate(nodes: CanvasNode[], edges: CanvasEdge[]): SecurityWarning[] {
+  evaluate(nodes: CanvasNode[], _edges: CanvasEdge[]): SecurityWarning[] {
+    void _edges;
     const warnings: SecurityWarning[] = [];
-    const policyNodes = nodes.filter(n => n.data.resourceType === 'iam-policy');
+    const policyNodes = nodes.filter(
+      (n) => n.data.resourceType === 'iam-policy',
+    );
 
     for (const policy of policyNodes) {
       const config = policy.data.config as IAMPolicyConfig;
@@ -17,15 +25,37 @@ export class IAMWildcardRule extends BaseGuardrailRule {
       if (!doc) continue;
 
       try {
-        const parsed = typeof doc === 'string' ? JSON.parse(doc) : doc;
-        const statements = parsed.Statement || [];
-        
-        for (const stmt of Array.isArray(statements) ? statements : [statements]) {
-          const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
-          const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
+        const parsed = (
+          typeof doc === 'string' ? JSON.parse(doc) : doc
+        ) as Record<string, unknown>;
+        const statements = Array.isArray(parsed['Statement'])
+          ? (parsed['Statement'] as Record<string, unknown>[])
+          : parsed['Statement']
+            ? [parsed['Statement'] as Record<string, unknown>]
+            : [];
 
-          const hasWildcardAction = actions.some((act: any) => act === '*');
-          const hasWildcardResource = resources.some((res: any) => res === '*');
+        for (const stmt of statements) {
+          const actionVal = stmt['Action'];
+          const resourceVal = stmt['Resource'];
+
+          const actions = Array.isArray(actionVal)
+            ? (actionVal as unknown[])
+            : actionVal
+              ? [actionVal]
+              : [];
+
+          const resources = Array.isArray(resourceVal)
+            ? (resourceVal as unknown[])
+            : resourceVal
+              ? [resourceVal]
+              : [];
+
+          const hasWildcardAction = actions.some(
+            (act) => typeof act === 'string' && act === '*',
+          );
+          const hasWildcardResource = resources.some(
+            (res) => typeof res === 'string' && res === '*',
+          );
 
           if (hasWildcardAction || hasWildcardResource) {
             warnings.push({
@@ -33,7 +63,8 @@ export class IAMWildcardRule extends BaseGuardrailRule {
               nodeId: policy.id,
               severity: this.severity,
               message: `IAM Policy "${policy.data.label || policy.id}" contains broad wildcard (*) actions or resources.`,
-              suggestion: 'Enforce least-privilege by restricting the policy to specific AWS actions and resource ARNs.',
+              suggestion:
+                'Enforce least-privilege by restricting the policy to specific AWS actions and resource ARNs.',
             });
           }
         }

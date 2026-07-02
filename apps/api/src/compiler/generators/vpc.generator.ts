@@ -1,11 +1,16 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, VPCConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  VPCConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class VPCGenerator extends BaseGenerator {
   readonly resourceType = 'vpc';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as VPCConfig;
     const name = toTerraformName(node.data.label || node.id);
 

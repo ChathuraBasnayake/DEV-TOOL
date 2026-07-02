@@ -73,10 +73,10 @@ describe('TopologicalSort', () => {
 
     const sorted = sortNodes(nodes);
 
-    expect(sorted.map(n => n.data.resourceType)).toEqual([
-      'vpc',          // Tier 0
-      'subnet',       // Tier 1
-      'ec2',          // Tier 3
+    expect(sorted.map((n) => n.data.resourceType)).toEqual([
+      'vpc', // Tier 0
+      'subnet', // Tier 1
+      'ec2', // Tier 3
       'target-group', // Tier 4
     ]);
   });
@@ -120,7 +120,7 @@ describe('TopologicalSort', () => {
 
     const sorted = sortNodes(nodes);
 
-    expect(sorted.map(n => n.data.label)).toEqual([
+    expect(sorted.map((n) => n.data.label)).toEqual([
       'Alpha VPC',
       'Beta VPC',
       'Charlie VPC',
@@ -166,10 +166,6 @@ describe('TopologicalSort', () => {
 
     const sorted = sortNodes(nodes);
 
-    expect(sorted.map(n => n.id)).toEqual([
-      'vpc-x',
-      'vpc-y',
-      'vpc-z',
-    ]);
+    expect(sorted.map((n) => n.id)).toEqual(['vpc-x', 'vpc-y', 'vpc-z']);
   });
 });

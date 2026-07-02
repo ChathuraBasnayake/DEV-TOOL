@@ -25,10 +25,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
         : 'Internal server error';
 
     // Format error message to be a string or array of strings
+    const msgObj = message as Record<string, unknown>;
     const errorMessage =
       typeof message === 'object' && message !== null
-        ? (message as any).message || JSON.stringify(message)
-        : message;
+        ? typeof msgObj['message'] === 'string'
+          ? msgObj['message']
+          : JSON.stringify(message)
+        : String(message);
 
     const errorResponse = {
       success: false,
@@ -36,9 +39,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: errorMessage,
-      errors: typeof message === 'object' && message !== null && 'errors' in message
-        ? (message as any).errors
-        : undefined,
+      errors:
+        typeof message === 'object' && message !== null
+          ? (msgObj['errors'] as unknown[] | undefined)
+          : undefined,
     };
 
     response.status(status).json(errorResponse);

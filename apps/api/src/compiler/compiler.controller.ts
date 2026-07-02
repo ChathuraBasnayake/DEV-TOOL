@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
+import type { Response } from 'express';
 import JSZip from 'jszip';
 import { CompilerService } from './compiler.service';
 import { CompileDto } from './dto/compile.dto';
@@ -11,19 +12,20 @@ export class CompilerController {
   constructor(private readonly compilerService: CompilerService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Compile canvas state to Terraform configuration files' })
+  @ApiOperation({
+    summary: 'Compile canvas state to Terraform configuration files',
+  })
   @ApiBody({ type: CompileDto })
-  async compile(@Body() dto: CompileDto): Promise<TerraformOutput> {
+  compile(@Body() dto: CompileDto): TerraformOutput {
     return this.compilerService.compile(dto.nodes, dto.edges);
   }
 
   @Post('download')
-  @ApiOperation({ summary: 'Compile canvas state and download HCL files as a zip package' })
+  @ApiOperation({
+    summary: 'Compile canvas state and download HCL files as a zip package',
+  })
   @ApiBody({ type: CompileDto })
-  async download(
-    @Body() dto: CompileDto,
-    @Res() res: any,
-  ): Promise<void> {
+  async download(@Body() dto: CompileDto, @Res() res: Response): Promise<void> {
     const output = this.compilerService.compile(dto.nodes, dto.edges);
 
     const zip = new JSZip();

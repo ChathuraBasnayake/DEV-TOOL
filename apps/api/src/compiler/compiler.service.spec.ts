@@ -20,18 +20,20 @@ describe('CompilerService', () => {
   it('should compile an empty canvas into default structural HCL files', () => {
     const output = service.compile([], []);
     expect(output.files).toHaveLength(5);
-    
-    const filenames = output.files.map(f => f.filename);
+
+    const filenames = output.files.map((f) => f.filename);
     expect(filenames).toContain('main.tf');
     expect(filenames).toContain('variables.tf');
     expect(filenames).toContain('outputs.tf');
     expect(filenames).toContain('terraform.tf');
     expect(filenames).toContain('provider.tf');
 
-    const mainFile = output.files.find(f => f.filename === 'main.tf');
+    const mainFile = output.files.find((f) => f.filename === 'main.tf');
     expect(mainFile?.content.trim()).toBe('');
 
-    const terraformFile = output.files.find(f => f.filename === 'terraform.tf');
+    const terraformFile = output.files.find(
+      (f) => f.filename === 'terraform.tf',
+    );
     expect(terraformFile?.content).toContain('required_providers {');
   });
 
@@ -97,14 +99,14 @@ describe('CompilerService', () => {
     expect(output.warnings).toHaveLength(0);
     expect(output.syntheticResources).toHaveLength(0);
 
-    const mainFile = output.files.find(f => f.filename === 'main.tf');
+    const mainFile = output.files.find((f) => f.filename === 'main.tf');
     expect(mainFile).toBeDefined();
 
     const content = mainFile?.content;
-    
+
     // Check vpc is defined first (due to topological sort!)
     expect(content).toContain('resource "aws_vpc" "main_vpc" {');
-    
+
     // Check subnet references VPC
     expect(content).toContain('resource "aws_subnet" "app_subnet" {');
     expect(content).toContain('vpc_id            = aws_vpc.main_vpc.id');

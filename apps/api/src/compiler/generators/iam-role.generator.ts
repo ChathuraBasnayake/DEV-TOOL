@@ -1,25 +1,34 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, IAMRoleConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  IAMRoleConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
-const DEFAULT_ASSUME_ROLE_POLICY = JSON.stringify({
-  Version: '2012-10-17',
-  Statement: [
-    {
-      Action: 'sts:AssumeRole',
-      Principal: {
-        Service: 'ec2.amazonaws.com'
+const DEFAULT_ASSUME_ROLE_POLICY = JSON.stringify(
+  {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Action: 'sts:AssumeRole',
+        Principal: {
+          Service: 'ec2.amazonaws.com',
+        },
+        Effect: 'Allow',
+        Sid: '',
       },
-      Effect: 'Allow',
-      Sid: ''
-    }
-  ]
-}, null, 2);
+    ],
+  },
+  null,
+  2,
+);
 
 export class IAMRoleGenerator extends BaseGenerator {
   readonly resourceType = 'iam-role';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as IAMRoleConfig;
     const name = toTerraformName(node.data.label || node.id);
 
@@ -42,7 +51,7 @@ export class IAMRoleGenerator extends BaseGenerator {
     let formattedPolicy = rawPolicy;
     try {
       formattedPolicy = JSON.stringify(JSON.parse(rawPolicy), null, 2);
-    } catch (e) {
+    } catch {
       // Keep raw if invalid JSON
     }
 

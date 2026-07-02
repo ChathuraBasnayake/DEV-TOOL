@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, SubnetConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  SubnetConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class SubnetGenerator extends BaseGenerator {
@@ -11,7 +15,11 @@ export class SubnetGenerator extends BaseGenerator {
 
     // Resolve vpc_id from references
     const vpcRef = this.findReference(node.id, 'vpc_id', references);
-    const vpcIdVal = vpcRef ? vpcRef.terraformExpression : (config.vpc_id ? `"${config.vpc_id}"` : '""');
+    const vpcIdVal = vpcRef
+      ? vpcRef.terraformExpression
+      : config.vpc_id
+        ? `"${config.vpc_id}"`
+        : '""';
 
     const parts: string[] = [];
     parts.push(`resource "aws_subnet" "${name}" {`);
@@ -22,7 +30,9 @@ export class SubnetGenerator extends BaseGenerator {
       parts.push(`  availability_zone = "${config.availability_zone}"`);
     }
     if (config.map_public_ip_on_launch !== undefined) {
-      parts.push(`  map_public_ip_on_launch = ${config.map_public_ip_on_launch}`);
+      parts.push(
+        `  map_public_ip_on_launch = ${config.map_public_ip_on_launch}`,
+      );
     }
 
     const tagsHcl = this.formatTags(config.tags, node.data.label || node.id);

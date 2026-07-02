@@ -1,10 +1,6 @@
 export class ProviderGenerator {
   generateProvider(): string {
-    return [
-      `provider "aws" {`,
-      `  region = var.aws_region`,
-      `}`
-    ].join('\n');
+    return [`provider "aws" {`, `  region = var.aws_region`, `}`].join('\n');
   }
 
   generateRequiredProviders(): string {
@@ -16,7 +12,7 @@ export class ProviderGenerator {
       `      version = "~> 5.0"`,
       `    }`,
       `  }`,
-      `}`
+      `}`,
     ].join('\n');
   }
 }

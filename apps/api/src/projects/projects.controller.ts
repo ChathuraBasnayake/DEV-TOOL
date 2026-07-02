@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -34,7 +42,10 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Update project (used by auto-save)' })
   @ApiParam({ name: 'id', description: 'Project database ID' })
   @ApiBody({ type: UpdateProjectDto })
-  update(@Param('id') id: string, @Body() dto: UpdateProjectDto): Promise<Project> {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateProjectDto,
+  ): Promise<Project> {
     return this.projectsService.update(id, dto);
   }
 

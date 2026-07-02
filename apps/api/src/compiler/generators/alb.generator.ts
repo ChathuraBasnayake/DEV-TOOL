@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, ALBConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  ALBConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class ALBGenerator extends BaseGenerator {
@@ -11,25 +15,31 @@ export class ALBGenerator extends BaseGenerator {
 
     // Resolve subnets from references
     const subnetRefs = this.findReferences(node.id, 'subnets', references);
-    const subnetsVal = subnetRefs.length > 0
-      ? `[${subnetRefs.map(r => r.terraformExpression).join(', ')}]`
-      : (config.subnets && config.subnets.length > 0
-        ? `[${config.subnets.map(id => `"${id}"`).join(', ')}]`
-        : null);
+    const subnetsVal =
+      subnetRefs.length > 0
+        ? `[${subnetRefs.map((r) => r.terraformExpression).join(', ')}]`
+        : config.subnets && config.subnets.length > 0
+          ? `[${config.subnets.map((id) => `"${id}"`).join(', ')}]`
+          : null;
 
     // Resolve security groups from references
     const sgRefs = this.findReferences(node.id, 'security_groups', references);
-    const sgsVal = sgRefs.length > 0
-      ? `[${sgRefs.map(r => r.terraformExpression).join(', ')}]`
-      : (config.security_groups && config.security_groups.length > 0
-        ? `[${config.security_groups.map(id => `"${id}"`).join(', ')}]`
-        : null);
+    const sgsVal =
+      sgRefs.length > 0
+        ? `[${sgRefs.map((r) => r.terraformExpression).join(', ')}]`
+        : config.security_groups && config.security_groups.length > 0
+          ? `[${config.security_groups.map((id) => `"${id}"`).join(', ')}]`
+          : null;
 
     const parts: string[] = [];
     parts.push(`resource "aws_lb" "${name}" {`);
     parts.push(`  name               = "${config.name || name}"`);
-    parts.push(`  internal           = ${config.internal !== undefined ? config.internal : false}`);
-    parts.push(`  load_balancer_type = "${config.load_balancer_type || 'application'}"`);
+    parts.push(
+      `  internal           = ${config.internal !== undefined ? config.internal : false}`,
+    );
+    parts.push(
+      `  load_balancer_type = "${config.load_balancer_type || 'application'}"`,
+    );
 
     if (subnetsVal) {
       parts.push(`  subnets            = ${subnetsVal}`);

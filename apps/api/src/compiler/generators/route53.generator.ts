@@ -1,11 +1,16 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, Route53Config } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  Route53Config,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class Route53Generator extends BaseGenerator {
   readonly resourceType = 'route53';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as Route53Config;
     const name = toTerraformName(node.data.label || node.id);
 

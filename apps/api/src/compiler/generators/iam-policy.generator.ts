@@ -1,22 +1,31 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, IAMPolicyConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  IAMPolicyConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
-const DEFAULT_POLICY_DOCUMENT = JSON.stringify({
-  Version: '2012-10-17',
-  Statement: [
-    {
-      Effect: 'Allow',
-      Action: '*',
-      Resource: '*'
-    }
-  ]
-}, null, 2);
+const DEFAULT_POLICY_DOCUMENT = JSON.stringify(
+  {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: '*',
+        Resource: '*',
+      },
+    ],
+  },
+  null,
+  2,
+);
 
 export class IAMPolicyGenerator extends BaseGenerator {
   readonly resourceType = 'iam-policy';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as IAMPolicyConfig;
     const name = toTerraformName(node.data.label || node.id);
 
@@ -35,7 +44,7 @@ export class IAMPolicyGenerator extends BaseGenerator {
     let formattedPolicy = rawPolicy;
     try {
       formattedPolicy = JSON.stringify(JSON.parse(rawPolicy), null, 2);
-    } catch (e) {
+    } catch {
       // Keep raw if invalid JSON
     }
 

@@ -15,7 +15,7 @@ export class OutputsGenerator {
             `  description = "Public IP address of the EC2 instance"`,
             `  value       = aws_instance.${name}.public_ip`,
             `}`,
-            ``
+            ``,
           );
           break;
         }
@@ -26,7 +26,7 @@ export class OutputsGenerator {
             `  description = "Connection endpoint for the RDS instance"`,
             `  value       = aws_db_instance.${name}.endpoint`,
             `}`,
-            ``
+            ``,
           );
           break;
         }
@@ -37,7 +37,7 @@ export class OutputsGenerator {
             `  description = "DNS name of the Application Load Balancer"`,
             `  value       = aws_lb.${name}.dns_name`,
             `}`,
-            ``
+            ``,
           );
           break;
         }
@@ -48,7 +48,7 @@ export class OutputsGenerator {
             `  description = "ARN of the S3 bucket"`,
             `  value       = aws_s3_bucket.${name}.arn`,
             `}`,
-            ``
+            ``,
           );
           break;
         }
@@ -59,7 +59,7 @@ export class OutputsGenerator {
             `  description = "Domain name of the CloudFront distribution"`,
             `  value       = aws_cloudfront_distribution.${name}.domain_name`,
             `}`,
-            ``
+            ``,
           );
           break;
         }
@@ -70,7 +70,7 @@ export class OutputsGenerator {
             `  description = "URL of the API Gateway stage"`,
             `  value       = aws_apigatewayv2_stage.${name}_stage.invoke_url`,
             `}`,
-            ``
+            ``,
           );
           break;
         }

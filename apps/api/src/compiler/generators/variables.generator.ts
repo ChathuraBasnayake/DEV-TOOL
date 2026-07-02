@@ -10,11 +10,11 @@ export class VariablesGenerator {
       `  description = "AWS region for all resources"`,
       `  type        = string`,
       `  default     = "us-east-1"`,
-      `}`
+      `}`,
     );
 
     // If there is an RDS database on the canvas, output rds credentials variables
-    const hasRDS = nodes.some(node => node.data.resourceType === 'rds');
+    const hasRDS = nodes.some((node) => node.data.resourceType === 'rds');
     if (hasRDS) {
       parts.push(
         ``,
@@ -29,7 +29,7 @@ export class VariablesGenerator {
         `  description = "Master password for RDS instance"`,
         `  type        = string`,
         `  sensitive   = true`,
-        `}`
+        `}`,
       );
     }
 

@@ -1,5 +1,9 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, TargetGroupConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  TargetGroupConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class TargetGroupGenerator extends BaseGenerator {
@@ -10,8 +14,12 @@ export class TargetGroupGenerator extends BaseGenerator {
     const name = toTerraformName(node.data.label || node.id);
 
     // Dynamic VPC resolution: search references for any valid aws_vpc expression
-    const vpcRef = references.find(r => r.terraformField === 'vpc_id');
-    const vpcIdVal = vpcRef ? vpcRef.terraformExpression : (config.vpc_id ? `"${config.vpc_id}"` : null);
+    const vpcRef = references.find((r) => r.terraformField === 'vpc_id');
+    const vpcIdVal = vpcRef
+      ? vpcRef.terraformExpression
+      : config.vpc_id
+        ? `"${config.vpc_id}"`
+        : null;
 
     const parts: string[] = [];
     parts.push(`resource "aws_lb_target_group" "${name}" {`);
@@ -33,13 +41,19 @@ export class TargetGroupGenerator extends BaseGenerator {
         parts.push(`    port                = "${config.health_check.port}"`);
       }
       if (config.health_check.protocol) {
-        parts.push(`    protocol            = "${config.health_check.protocol}"`);
+        parts.push(
+          `    protocol            = "${config.health_check.protocol}"`,
+        );
       }
       if (config.health_check.healthy_threshold !== undefined) {
-        parts.push(`    healthy_threshold   = ${config.health_check.healthy_threshold}`);
+        parts.push(
+          `    healthy_threshold   = ${config.health_check.healthy_threshold}`,
+        );
       }
       if (config.health_check.unhealthy_threshold !== undefined) {
-        parts.push(`    unhealthy_threshold = ${config.health_check.unhealthy_threshold}`);
+        parts.push(
+          `    unhealthy_threshold = ${config.health_check.unhealthy_threshold}`,
+        );
       }
       if (config.health_check.interval !== undefined) {
         parts.push(`    interval            = ${config.health_check.interval}`);

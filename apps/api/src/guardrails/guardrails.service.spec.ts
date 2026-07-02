@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GuardrailsService } from './guardrails.service';
-import type { CanvasNode, CanvasEdge } from '@canvascloud/shared';
+import type { CanvasNode } from '@canvascloud/shared';
 
 describe('GuardrailsService', () => {
   let service: GuardrailsService;
@@ -52,7 +52,7 @@ describe('GuardrailsService', () => {
     expect(output.summary.warning).toBe(1);
     expect(output.summary.info).toBe(0);
 
-    const ruleIds = output.warnings.map(w => w.ruleId);
+    const ruleIds = output.warnings.map((w) => w.ruleId);
     expect(ruleIds).toContain('public-s3-bucket');
     expect(ruleIds).toContain('encryption-at-rest-disabled');
   });

@@ -9,7 +9,7 @@ export function formatHCL(rawHcl: string): string {
 
   for (let line of lines) {
     line = line.trim();
-    
+
     if (!line) {
       formattedLines.push('');
       continue;
@@ -35,8 +35,10 @@ export function formatHCL(rawHcl: string): string {
   }
 
   // Join lines, cleanup multiple empty lines, and ensure a single trailing newline
-  return formattedLines
-    .join('\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim() + '\n';
+  return (
+    formattedLines
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim() + '\n'
+  );
 }

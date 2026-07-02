@@ -30,7 +30,9 @@ async function bootstrap() {
   // Set up Swagger API Documentation
   const config = new DocumentBuilder()
     .setTitle('CanvasCloud API')
-    .setDescription('Terraform compilation, security scanning, and project management')
+    .setDescription(
+      'Terraform compilation, security scanning, and project management',
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -41,4 +43,4 @@ async function bootstrap() {
   console.log(`🚀 CanvasCloud API running on http://localhost:${port}`);
   console.log(`📖 Swagger docs at http://localhost:${port}/api/docs`);
 }
-bootstrap();
+void bootstrap();

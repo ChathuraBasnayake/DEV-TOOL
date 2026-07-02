@@ -59,17 +59,25 @@ describe('ReferenceResolver', () => {
     expect(refs).toHaveLength(2);
 
     // vpc -> subnet reference
-    const vpcSubnetRef = refs.find(r => r.sourceNodeId === 'node-vpc-1' && r.targetNodeId === 'node-subnet-1');
+    const vpcSubnetRef = refs.find(
+      (r) =>
+        r.sourceNodeId === 'node-vpc-1' && r.targetNodeId === 'node-subnet-1',
+    );
     expect(vpcSubnetRef).toBeDefined();
     expect(vpcSubnetRef?.terraformField).toBe('vpc_id');
     expect(vpcSubnetRef?.terraformExpression).toBe('aws_vpc.main_vpc.id');
     expect(vpcSubnetRef?.isSynthetic).toBe(false);
 
     // subnet -> ec2 reference
-    const subnetEc2Ref = refs.find(r => r.sourceNodeId === 'node-subnet-1' && r.targetNodeId === 'node-ec2-1');
+    const subnetEc2Ref = refs.find(
+      (r) =>
+        r.sourceNodeId === 'node-subnet-1' && r.targetNodeId === 'node-ec2-1',
+    );
     expect(subnetEc2Ref).toBeDefined();
     expect(subnetEc2Ref?.terraformField).toBe('subnet_id');
-    expect(subnetEc2Ref?.terraformExpression).toBe('aws_subnet.public_subnet_a.id');
+    expect(subnetEc2Ref?.terraformExpression).toBe(
+      'aws_subnet.public_subnet_a.id',
+    );
     expect(subnetEc2Ref?.isSynthetic).toBe(false);
   });
 

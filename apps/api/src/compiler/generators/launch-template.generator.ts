@@ -1,11 +1,16 @@
 import { toTerraformName } from '@canvascloud/shared';
-import type { CanvasNode, TerraformReference, LaunchTemplateConfig } from '@canvascloud/shared';
+import type {
+  CanvasNode,
+  TerraformReference,
+  LaunchTemplateConfig,
+} from '@canvascloud/shared';
 import { BaseGenerator } from './base.generator';
 
 export class LaunchTemplateGenerator extends BaseGenerator {
   readonly resourceType = 'launch-template';
 
-  generate(node: CanvasNode, references: TerraformReference[]): string {
+  generate(node: CanvasNode, _references: TerraformReference[]): string {
+    void _references;
     const config = node.data.config as LaunchTemplateConfig;
     const name = toTerraformName(node.data.label || node.id);
 
@@ -22,15 +27,20 @@ export class LaunchTemplateGenerator extends BaseGenerator {
     if (config.key_name) {
       parts.push(`  key_name = "${config.key_name}"`);
     }
-    
-    if (config.vpc_security_group_ids && config.vpc_security_group_ids.length > 0) {
-      const sgIdsVal = `[${config.vpc_security_group_ids.map(id => `"${id}"`).join(', ')}]`;
+
+    if (
+      config.vpc_security_group_ids &&
+      config.vpc_security_group_ids.length > 0
+    ) {
+      const sgIdsVal = `[${config.vpc_security_group_ids.map((id) => `"${id}"`).join(', ')}]`;
       parts.push(`  vpc_security_group_ids = ${sgIdsVal}`);
     }
 
     if (config.user_data) {
       // Base64 encoded is typical for LT user_data in Terraform, but text is fine too
-      parts.push(`  user_data = base64encode(<<-EOF\n${config.user_data}\n  EOF)`);
+      parts.push(
+        `  user_data = base64encode(<<-EOF\n${config.user_data}\n  EOF)`,
+      );
     }
 
     if (config.iam_instance_profile_name) {
@@ -42,18 +52,26 @@ export class LaunchTemplateGenerator extends BaseGenerator {
     if (config.block_device_mappings) {
       parts.push(`  block_device_mappings {`);
       if (config.block_device_mappings.device_name) {
-        parts.push(`    device_name = "${config.block_device_mappings.device_name}"`);
+        parts.push(
+          `    device_name = "${config.block_device_mappings.device_name}"`,
+        );
       }
       if (config.block_device_mappings.ebs) {
         parts.push(`    ebs {`);
         if (config.block_device_mappings.ebs.volume_size !== undefined) {
-          parts.push(`      volume_size = ${config.block_device_mappings.ebs.volume_size}`);
+          parts.push(
+            `      volume_size = ${config.block_device_mappings.ebs.volume_size}`,
+          );
         }
         if (config.block_device_mappings.ebs.volume_type) {
-          parts.push(`      volume_type = "${config.block_device_mappings.ebs.volume_type}"`);
+          parts.push(
+            `      volume_type = "${config.block_device_mappings.ebs.volume_type}"`,
+          );
         }
         if (config.block_device_mappings.ebs.encrypted !== undefined) {
-          parts.push(`      encrypted   = ${config.block_device_mappings.ebs.encrypted}`);
+          parts.push(
+            `      encrypted   = ${config.block_device_mappings.ebs.encrypted}`,
+          );
         }
         parts.push(`    }`);
       }
