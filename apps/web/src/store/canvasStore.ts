@@ -193,7 +193,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
     const newNode: CanvasNode = {
       id,
-      type: "awsNode",
+      type: resourceType,
       position,
       data: {
         label,

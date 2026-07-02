@@ -6,12 +6,6 @@ import {
   MiniMap,
   useReactFlow,
   ReactFlowProvider,
-  NodeProps,
-  EdgeProps,
-  Handle,
-  Position,
-  BaseEdge,
-  getBezierPath,
   Node,
   Edge,
   Panel,
@@ -22,119 +16,8 @@ import type { AWSResourceType } from "@canvascloud/shared";
 import CanvasBackground from "./CanvasBackground";
 import ConnectionLine from "./ConnectionLine";
 import CanvasControls from "./CanvasControls";
-
-/**
- * Temporary Placeholder Node styled inline with theme rules 
- * for visual feedback during the workspace core assembly.
- */
-function PlaceholderAWSNode({ data, selected }: NodeProps) {
-  const resourceType = data.resourceType as AWSResourceType;
-  const status = data.status as string;
-  const label = data.label as string;
-
-  return (
-    <div
-      className={`aws-node category-${resourceType} status-${status} ${
-        selected ? "selected" : ""
-      }`}
-      style={{
-        padding: "10px 14px",
-        borderRadius: "8px",
-        border: "2px solid var(--border-color)",
-        background: "var(--bg-card)",
-        color: "var(--text-color)",
-        minWidth: "160px",
-        boxShadow: selected ? "0 0 0 2px var(--primary-accent)" : "none",
-        position: "relative",
-        transition: "box-shadow 0.2s, border-color 0.2s",
-      }}
-    >
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{ background: "var(--primary-accent)" }}
-      />
-      <div style={{ fontSize: "10px", textTransform: "uppercase", opacity: 0.6 }}>
-        {resourceType}
-      </div>
-      <div style={{ fontWeight: "bold", fontSize: "12px", marginTop: "2px" }}>
-        {label}
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{ background: "var(--primary-accent)" }}
-      />
-    </div>
-  );
-}
-
-/**
- * Custom Dependency Edge rendering inline animated marching ants along the connection.
- */
-function PlaceholderDependencyEdge({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
-  markerEnd,
-  data,
-}: EdgeProps) {
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY,
-    sourcePosition,
-    targetX,
-    targetY,
-    targetPosition,
-  });
-
-  return (
-    <>
-      <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} className="canvas-edge animated" />
-      {data?.relationship && (
-        <g>
-          <rect
-            x={labelX - 35}
-            y={labelY - 10}
-            width={70}
-            height={20}
-            rx={4}
-            fill="var(--bg-card)"
-            stroke="var(--border-color)"
-            strokeWidth={1}
-          />
-          <text
-            x={labelX}
-            y={labelY}
-            textAnchor="middle"
-            dominantBaseline="central"
-            style={{
-              fontSize: "9px",
-              fontWeight: "600",
-              fill: "var(--text-muted)",
-              pointerEvents: "none",
-            }}
-          >
-            {data.relationship as string}
-          </text>
-        </g>
-      )}
-    </>
-  );
-}
-
-// Registry linking custom node/edge strings to components
-const nodeTypes = {
-  awsNode: PlaceholderAWSNode,
-};
-
-const edgeTypes = {
-  dependency: PlaceholderDependencyEdge,
-};
+import { nodeTypes } from "./nodes";
+import { edgeTypes } from "./edges";
 
 /**
  * Inner component utilizing useReactFlow context helpers.
