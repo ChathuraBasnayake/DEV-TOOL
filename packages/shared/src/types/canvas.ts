@@ -1,4 +1,4 @@
-import type { AWSConfig } from './aws';
+import type { AWSConfig } from './aws.js';
 
 export type AWSResourceType =
   | 'ec2'

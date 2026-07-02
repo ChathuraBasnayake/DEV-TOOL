@@ -1,16 +1,16 @@
 // Export Types
-export * from './types/canvas';
-export * from './types/aws';
-export * from './types/compiler';
-export * from './types/guardrails';
-export * from './types/project';
-export * from './types/api';
+export * from './types/canvas.js';
+export * from './types/aws.js';
+export * from './types/compiler.js';
+export * from './types/guardrails.js';
+export * from './types/project.js';
+export * from './types/api.js';
 
 // Export Constants
-export * from './constants/awsMetadata';
-export * from './constants/connectionRules';
-export * from './constants/colors';
+export * from './constants/awsMetadata.js';
+export * from './constants/connectionRules.js';
+export * from './constants/colors.js';
 
 // Export Utilities
-export * from './utils/naming';
-export * from './utils/validation';
+export * from './utils/naming.js';
+export * from './utils/validation.js';

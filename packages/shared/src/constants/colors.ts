@@ -1,4 +1,4 @@
-import type { AWSResourceType } from '../types/canvas';
+import type { AWSResourceType } from '../types/canvas.js';
 
 export const NODE_COLORS: Record<AWSResourceType, string> = {
   // Compute

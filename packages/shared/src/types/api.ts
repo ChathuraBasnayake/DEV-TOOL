@@ -1,6 +1,6 @@
-import type { CanvasNode, CanvasEdge, CanvasState, AWSResourceType } from './canvas';
-import type { TerraformOutput } from './compiler';
-import type { SecurityWarning } from './guardrails';
+import type { CanvasNode, CanvasEdge, CanvasState, AWSResourceType } from './canvas.js';
+import type { TerraformOutput } from './compiler.js';
+import type { SecurityWarning } from './guardrails.js';
 
 // Compile
 export interface CompileRequest {
