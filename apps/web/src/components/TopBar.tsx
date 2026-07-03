@@ -8,6 +8,7 @@ import SaveButton from "./SaveButton";
 import LoadButton from "./LoadButton";
 import ExportButton from "./ExportButton";
 import Button from "./ui/Button";
+import TerraformPreview from "./TerraformPreview";
 
 export default function TopBar() {
   const {
@@ -22,6 +23,9 @@ export default function TopBar() {
     handleScan,
     handleDownloadZip,
     setIsProjectManagerOpen,
+    isTerraformPreviewOpen,
+    setIsTerraformPreviewOpen,
+    terraformFiles,
   } = useTopBar();
 
   // Expose triggers for modal launches
@@ -134,6 +138,13 @@ export default function TopBar() {
 
         <ExportButton onExport={handleDownloadZip} isExporting={isDownloading} />
       </div>
+
+      {/* Modals & Dialogs */}
+      <TerraformPreview
+        isOpen={isTerraformPreviewOpen}
+        onClose={() => setIsTerraformPreviewOpen(false)}
+        output={terraformFiles}
+      />
     </div>
   );
 }
