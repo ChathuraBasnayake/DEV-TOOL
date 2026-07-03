@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
+import TopBar from "../components/TopBar";
 import CanvasWorkspace from "../components/CanvasWorkspace";
 
 /**
- * Main application entrypoint rendering the interactive designer canvas workspace fullscreen.
+ * Main application entrypoint rendering the top navigation bar and
+ * interactive designer canvas workspace.
  */
 export default function Home() {
   return (
@@ -15,9 +17,14 @@ export default function Home() {
         overflow: "hidden",
         position: "relative",
         backgroundColor: "var(--bg-app)",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <CanvasWorkspace />
+      <TopBar />
+      <div style={{ flex: 1, position: "relative" }}>
+        <CanvasWorkspace />
+      </div>
     </main>
   );
 }
