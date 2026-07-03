@@ -4,8 +4,11 @@ import React from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Trash2, Info, Settings, FileText } from "lucide-react";
 import { usePropertyPanel } from "../hooks/usePropertyPanel";
+import { useCanvasStore } from "../store/canvasStore";
 import Button from "./ui/Button";
 import Badge from "./ui/Badge";
+import PropertyField from "./fields/PropertyField";
+import { RESOURCE_SCHEMAS } from "../constants/schemas";
 
 // Helper map to convert resource type keys to clean titles
 const RESOURCE_TITLES: Record<string, string> = {
@@ -256,20 +259,53 @@ export default function PropertyPanel() {
           {/* Properties Config Tab */}
           <Tabs.Content value="config" style={{ outline: "none" }}>
             <div id="property-panel-fields-container">
-              {/* Dynamic properties fields will render here in Task 4.5/4.6 */}
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-muted)",
-                  textAlign: "center",
-                  padding: "24px 8px",
-                  border: "1px dashed var(--border-color)",
-                  borderRadius: "var(--radius-md)",
-                  backgroundColor: "var(--bg-panel)",
-                }}
-              >
-                Configure parameters to generate valid HCL definitions.
-              </div>
+              {(() => {
+                const schema = RESOURCE_SCHEMAS[resourceType] || {};
+                const config = (selectedNode.data.config as Record<string, unknown>) || {};
+                const updateNodeConfig = useCanvasStore.getState().updateNodeConfig;
+                const schemaEntries = Object.entries(schema);
+
+                if (schemaEntries.length === 0) {
+                  return (
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--text-muted)",
+                        textAlign: "center",
+                        padding: "24px 8px",
+                        border: "1px dashed var(--border-color)",
+                        borderRadius: "var(--radius-md)",
+                        backgroundColor: "var(--bg-panel)",
+                      }}
+                    >
+                      No configurable parameters for this resource.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {schemaEntries.map(([key, fieldSchema]) => {
+                      const value = config[key] !== undefined ? config[key] : fieldSchema.defaultValue;
+                      const isRequiredEmpty =
+                        fieldSchema.required &&
+                        (value === undefined || value === null || value === "");
+                      const fieldError = isRequiredEmpty ? "This field is required" : undefined;
+
+                      return (
+                        <PropertyField
+                          key={key}
+                          propertyKey={key}
+                          schema={fieldSchema}
+                          value={value}
+                          onChange={(val) => updateNodeConfig(selectedNode.id, { [key]: val })}
+                          error={fieldError}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           </Tabs.Content>
 
