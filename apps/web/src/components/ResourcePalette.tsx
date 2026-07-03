@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
-  Search,
-  ChevronDown,
-  ChevronRight,
   Server,
   Layers,
   FileCode,
@@ -27,37 +24,12 @@ import {
   Compass,
   Radio,
 } from "lucide-react";
-import type { AWSResourceType } from "@canvascloud/shared";
-
-interface PaletteItem {
-  type: AWSResourceType;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-}
-
-interface PaletteCategory {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  colorClass: string;
-  items: PaletteItem[];
-}
+import { useResourcePalette, PaletteCategory } from "../hooks/useResourcePalette";
+import SearchFilter from "./SearchFilter";
+import ResourceCategory from "./ResourceCategory";
+import ResourceItem from "./ResourceItem";
 
 export default function ResourcePalette() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
-    compute: true,
-    networking: true,
-    securityGroups: true,
-    loadBalancing: true,
-    databases: true,
-    storage: true,
-    accessControl: false,
-    serverless: false,
-    dnsCdn: false,
-  });
-
   // Registry of all 22 AWS resources grouped into 9 categories
   const categories: PaletteCategory[] = useMemo(
     () => [
@@ -269,37 +241,14 @@ export default function ResourcePalette() {
     []
   );
 
-  // Toggle category collapse
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId],
-    }));
-  };
-
-  // Drag start callback to write visual metadata transfer payload
-  const handleDragStart = (event: React.DragEvent, type: AWSResourceType) => {
-    event.dataTransfer.setData("application/reactflow", type);
-    event.dataTransfer.effectAllowed = "move";
-  };
-
-  // Compute filtered categories based on search input query
-  const filteredCategories = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return categories;
-
-    return categories
-      .map((cat) => {
-        const matchingItems = cat.items.filter(
-          (item) =>
-            item.name.toLowerCase().includes(query) ||
-            item.type.toLowerCase().includes(query) ||
-            item.description.toLowerCase().includes(query)
-        );
-        return { ...cat, items: matchingItems };
-      })
-      .filter((cat) => cat.items.length > 0);
-  }, [categories, searchQuery]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    expandedCategories,
+    toggleCategory,
+    handleDragStart,
+    filteredCategories,
+  } = useResourcePalette({ categories });
 
   return (
     <div
@@ -341,38 +290,7 @@ export default function ResourcePalette() {
       </div>
 
       {/* Palette Search Filtering Input */}
-      <div style={{ padding: "12px 16px", position: "relative" }}>
-        <div style={{ position: "relative", width: "100%" }}>
-          <Search
-            size={14}
-            style={{
-              position: "absolute",
-              left: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-muted)",
-              pointerEvents: "none",
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Search resource..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: "100%",
-              backgroundColor: "var(--bg-active)",
-              border: "1px solid var(--border-color)",
-              borderRadius: "var(--radius-md)",
-              padding: "8px 12px 8px 34px",
-              fontSize: "0.8rem",
-              color: "var(--text-primary)",
-              transition: "border-color 0.2s",
-            }}
-            className="palette-search-input"
-          />
-        </div>
-      </div>
+      <SearchFilter value={searchQuery} onChange={setSearchQuery} />
 
       {/* Accordions Category Lists */}
       <div
@@ -395,138 +313,28 @@ export default function ResourcePalette() {
             No matching resources found
           </div>
         ) : (
-          filteredCategories.map((category) => {
-            const isExpanded = expandedCategories[category.id] !== false;
-
-            return (
-              <div
-                key={category.id}
-                style={{
-                  marginBottom: "8px",
-                  borderRadius: "var(--radius-md)",
-                  overflow: "hidden",
-                  border: "1px solid var(--border-color)",
-                  backgroundColor: "var(--bg-card)",
-                }}
-              >
-                {/* Accordion Category Header */}
-                <button
-                  onClick={() => toggleCategory(category.id)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
-                    padding: "10px 12px",
-                    cursor: "pointer",
-                    backgroundColor: "var(--bg-panel)",
-                    borderBottom: isExpanded ? "1px solid var(--border-color)" : "none",
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = "var(--bg-active)")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = "var(--bg-panel)")
-                  }
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    <span style={{ color: "var(--accent-color)" }}>{category.icon}</span>
-                    <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>
-                      {category.name}
-                    </span>
-                  </div>
-                  <div style={{ color: "var(--text-muted)" }}>
-                    {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                  </div>
-                </button>
-
-                {/* Collapsible Items Container */}
-                {isExpanded && (
-                  <div
-                    style={{
-                      padding: "8px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "6px",
-                    }}
-                  >
-                    {category.items.map((item) => (
-                      <div
-                        key={item.type}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, item.type)}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: "10px",
-                          padding: "8px 10px",
-                          borderRadius: "var(--radius-sm)",
-                          border: "1px solid var(--border-color)",
-                          backgroundColor: "var(--bg-card)",
-                          cursor: "grab",
-                          userSelect: "none",
-                          transition: "border-color 0.2s, box-shadow 0.2s",
-                        }}
-                        onDragOver={(e) => e.preventDefault()}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.borderColor = "var(--border-hover)";
-                          e.currentTarget.style.boxShadow = "var(--shadow-sm)";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.borderColor = "var(--border-color)";
-                          e.currentTarget.style.boxShadow = "none";
-                        }}
-                        className={`palette-item-card ${category.colorClass}`}
-                      >
-                        {/* Bullet styling from category class colors */}
-                        <div
-                          style={{
-                            marginTop: "3px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--accent-color)",
-                          }}
-                        >
-                          {item.icon}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              fontSize: "0.78rem",
-                              fontWeight: 700,
-                              color: "var(--text-primary)",
-                            }}
-                          >
-                            {item.name}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: "0.68rem",
-                              color: "var(--text-muted)",
-                              marginTop: "1px",
-                              lineHeight: "1.2",
-                              whiteSpace: "normal",
-                            }}
-                          >
-                            {item.description}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })
+          filteredCategories.map((category) => (
+            <ResourceCategory
+              key={category.id}
+              id={category.id}
+              name={category.name}
+              icon={category.icon}
+              isExpanded={expandedCategories[category.id] !== false}
+              onToggle={() => toggleCategory(category.id)}
+            >
+              {category.items.map((item) => (
+                <ResourceItem
+                  key={item.type}
+                  type={item.type}
+                  name={item.name}
+                  description={item.description}
+                  icon={item.icon}
+                  colorClass={category.colorClass}
+                  onDragStart={handleDragStart}
+                />
+              ))}
+            </ResourceCategory>
+          ))
         )}
       </div>
     </div>
