@@ -10,6 +10,7 @@ import ExportButton from "./ExportButton";
 import Button from "./ui/Button";
 import TerraformPreview from "./TerraformPreview";
 import GuardrailWarnings from "./GuardrailWarnings";
+import ProjectManager from "./ProjectManager";
 
 export default function TopBar() {
   const {
@@ -23,6 +24,7 @@ export default function TopBar() {
     handleCompile,
     handleScan,
     handleDownloadZip,
+    isProjectManagerOpen,
     setIsProjectManagerOpen,
     isTerraformPreviewOpen,
     setIsTerraformPreviewOpen,
@@ -153,6 +155,10 @@ export default function TopBar() {
         isOpen={isGuardrailsOpen}
         onClose={() => setIsGuardrailsOpen(false)}
         scanResult={scanResult}
+      />
+      <ProjectManager
+        isOpen={isProjectManagerOpen}
+        onClose={() => setIsProjectManagerOpen(false)}
       />
     </div>
   );
