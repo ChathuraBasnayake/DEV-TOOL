@@ -9,6 +9,7 @@ import LoadButton from "./LoadButton";
 import ExportButton from "./ExportButton";
 import Button from "./ui/Button";
 import TerraformPreview from "./TerraformPreview";
+import GuardrailWarnings from "./GuardrailWarnings";
 
 export default function TopBar() {
   const {
@@ -26,6 +27,9 @@ export default function TopBar() {
     isTerraformPreviewOpen,
     setIsTerraformPreviewOpen,
     terraformFiles,
+    isGuardrailsOpen,
+    setIsGuardrailsOpen,
+    scanResult,
   } = useTopBar();
 
   // Expose triggers for modal launches
@@ -144,6 +148,11 @@ export default function TopBar() {
         isOpen={isTerraformPreviewOpen}
         onClose={() => setIsTerraformPreviewOpen(false)}
         output={terraformFiles}
+      />
+      <GuardrailWarnings
+        isOpen={isGuardrailsOpen}
+        onClose={() => setIsGuardrailsOpen(false)}
+        scanResult={scanResult}
       />
     </div>
   );
